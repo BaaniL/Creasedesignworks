@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KyteOne — Trusted contact data from every document</title>
+<meta name="description" content="KyteOne reads business contacts from any file, checks them against official records and puts them into Word, Outlook and your CRM.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%22-82%200%20500%20500%22%3E%3Cg%3E%3Cg%3E%3Cg%3E%3Cpolygon%20fill%3D%22%23B62124%22%20points%3D%22319.04%20500%20319.04%20449.14%20167.29%20278.91%20275.97%20163.97%20240.71%20163.97%20240.71%20124.51%20221.98%20124.51%2074.78%20280.19%2074.78%20124.02%200%20154.04%200%20459.31%2074.78%20459.31%2074.78%20376.75%20121.55%20327.29%20275.51%20500%20319.04%20500%22/%3E%3Crect%20fill%3D%22%23B62124%22%20x%3D%22260.26%22%20y%3D%2280.64%22%20width%3D%2263.54%22%20height%3D%2263.73%22/%3E%3Crect%20fill%3D%22%23B62124%22%20x%3D%22226.3%22%20y%3D%2215.44%22%20width%3D%2244.97%22%20height%3D%2245.1%22/%3E%3Crect%20fill%3D%22%23B62124%22%20x%3D%22292.03%22%20width%3D%2244.97%22%20height%3D%2245.1%22/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#161514; --ink-2:#24221F; --ink-3:#34312D;
+  --text:#45423D; --muted:#6B665E; --muted-dark:#C9C4BC;
+  --line:#E4E0D9; --line-2:#ECE8E2; --line-3:#CFCAC1;
+  --bg:#FFFFFF; --stone:#F4F2EE; --stone-2:#FAF9F7;
+  --accent:#B4232A; --accent-soft:#FBE7E8; --accent-deep:#8E1B21; --accent-light:#F2A7AA;
+  --ok:#1F6B42; --ok-soft:#E6F2EA; --warn:#8A5A00; --warn-soft:#FDF3E1;
+  --radius:20px; --max:1320px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --shadow-1:0 6px 20px rgba(22,21,20,.06);
+  --shadow-2:0 16px 40px rgba(22,21,20,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+img,svg{display:block}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+section[id],[id].anchor{scroll-margin-top:96px}
+.container{max-width:var(--max);margin:0 auto;padding-left:24px;padding-right:24px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600;transition:top .2s}
+.skip:focus{top:16px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.h2{font-size:clamp(30px,3.6vw,44px);line-height:1.12;font-weight:600;letter-spacing:-.03em}
+.lead{font-size:17px;line-height:1.6;color:var(--text)}
+.section{border-top:1px solid var(--line)}
+.pad{padding-top:96px;padding-bottom:96px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 22px;border-radius:999px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s var(--ease),background .2s,box-shadow .2s,border-color .2s,color .2s;white-space:nowrap}
+.btn:active{transform:translateY(1px) scale(.98)}
+.btn-dark{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-dark:hover{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;box-shadow:0 8px 20px rgba(180,35,42,.28);transform:translateY(-1px)}
+.btn-light{background:#fff;color:var(--ink);border-color:var(--line-3)}
+.btn-light:hover{border-color:var(--ink);transform:translateY(-1px)}
+.btn-white{background:#fff;color:var(--ink)}
+.btn-white:hover{background:var(--stone);transform:translateY(-1px)}
+.btn-ghost-dark{color:#fff;border:1.5px solid #fff;background:transparent}
+.btn-ghost-dark:hover{background:#fff;border-color:#fff;color:var(--ink);transform:translateY(-1px)}
+.btn-lg{min-height:52px;padding:0 28px;font-size:16px}
+
+/* Reveal */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-reveal].is-in{opacity:1;transform:none}
+[data-reveal-delay="1"]{transition-delay:.08s}[data-reveal-delay="2"]{transition-delay:.16s}[data-reveal-delay="3"]{transition-delay:.24s}
+
+/* Header */
+.site-header{position:sticky;top:12px;z-index:50;padding:0 16px;margin-top:20px}
+.nav{max-width:1270px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 8px 8px 24px;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-1);transition:box-shadow .3s}
+.site-header.scrolled .nav{box-shadow:0 12px 32px rgba(22,21,20,.12)}
+.logo{text-decoration:none;font-size:22px;font-weight:700;letter-spacing:-.03em;color:var(--ink)}
+.logo span{color:var(--accent)}
+.logo{display:inline-flex;align-items:center;color:var(--ink)}
+.logo-svg{display:block;height:30px;width:auto}
+.foot-wordmark{color:#fff;line-height:0}
+.foot-logo{display:block;width:clamp(240px,34vw,560px);height:auto}
+.nav-links{display:flex;gap:2px;font-size:15px;font-weight:500}
+.nav-links a{text-decoration:none;color:var(--text);padding:10px 14px;border-radius:999px;transition:background .2s,color .2s}
+.nav-links a:hover{background:var(--stone);color:var(--ink)}
+.nav-links a.active{background:var(--stone);color:var(--ink)}
+.nav-actions{display:flex;align-items:center;gap:4px}
+.nav-actions .signin{text-decoration:none;font-weight:500;font-size:15px;padding:10px 14px;border-radius:999px}
+.nav-actions .signin:hover{background:var(--stone)}
+.menu-btn{display:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;align-items:center;justify-content:center}
+.mobile-menu{display:none}
+@media (max-width:860px){
+  .nav-links,.nav-actions .signin{display:none}
+  .menu-btn{display:inline-flex}
+  .nav{padding-left:20px}
+  .mobile-menu{display:block;position:absolute;left:16px;right:16px;top:100%;max-width:1270px;margin:8px auto 0;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 40px rgba(22,21,20,.14);padding:8px;transform-origin:top;transition:opacity .2s,transform .2s var(--ease)}
+  .mobile-menu[hidden]{display:block;opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;visibility:hidden}
+  .mobile-menu a{display:block;padding:14px 16px;border-radius:12px;text-decoration:none;font-weight:500}
+  .mobile-menu a:hover{background:var(--stone)}
+}
+
+/* Hero */
+.hero{padding:72px 0 80px;position:relative;overflow:hidden}
+.hero .container{position:relative;z-index:1}
+/* First screen = hero only */
+.hero-stage{display:flex;align-items:center;justify-content:center}
+@media (min-width:861px){
+  .hero{padding-top:0;padding-bottom:24px}
+  .hero-stage{min-height:calc(100vh - 104px);min-height:calc(100svh - 104px);padding:24px 0 8px}
+  .deco{top:max(0px, calc((100svh - 104px - 640px) / 2))}
+  }
+@media (max-width:860px){.hero{padding-top:36px}}
+/* Hero side decorations */
+.deco{position:absolute;z-index:0;pointer-events:none;top:0;left:0;right:0;height:640px}
+.deco .f{position:absolute;will-change:transform;transition:transform .5s var(--ease)}
+.deco .f > *{animation:float 7s ease-in-out infinite}
+.deco .f.d2 > *{animation-duration:8.5s;animation-delay:-2s}
+.deco .f.d3 > *{animation-duration:6.5s;animation-delay:-4s}
+.deco .f.d4 > *{animation-duration:9s;animation-delay:-1s}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+.d-doc{width:150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 14px;box-shadow:0 8px 22px rgba(22,21,20,.06);rotate:-8deg;position:relative;overflow:hidden;opacity:.85}
+.d-doc .ln{height:6px;background:var(--line-2);border-radius:3px;margin:7px 0}
+.d-doc .hw{display:inline-block;font-size:11px;font-weight:600;color:var(--accent-deep);background:var(--accent-soft);border-radius:4px;padding:1px 5px;margin:3px 0}
+.d-doc .sl{position:absolute;left:0;right:0;height:2px;top:0;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5;animation:docscan 4s ease-in-out infinite}
+@keyframes docscan{0%,100%{transform:translateY(12px)}50%{transform:translateY(100px)}}
+.d-doc .cb{position:absolute;width:12px;height:12px;border-color:var(--line-3);border-style:solid}
+.d-pill{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 16px 10px 10px;box-shadow:0 12px 28px rgba(22,21,20,.08);font-size:13px;font-weight:600;white-space:nowrap;rotate:3deg}
+.ring{width:26px;height:26px;border-radius:50%;border:3px solid var(--line-2);border-top-color:var(--accent);animation:spin 1.1s linear infinite;flex:none}
+.d-contact{width:220px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 18px 40px rgba(22,21,20,.10);display:flex;flex-direction:column;gap:10px;rotate:6deg}
+.d-chip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 12px;box-shadow:0 10px 24px rgba(22,21,20,.07);font-size:12px;white-space:nowrap}
+.d-chip .tg{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 7px}
+@media (max-width:1240px){.deco{display:none}}
+@media (prefers-reduced-motion:reduce){.deco .f > *,.d-doc .sl,.ring{animation:none!important}}
+.hero-copy{max-width:920px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);background:var(--stone);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.dot.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,35,42,.45)}70%{box-shadow:0 0 0 8px rgba(180,35,42,0)}100%{box-shadow:0 0 0 0 rgba(180,35,42,0)}}
+.hero h1{font-size:clamp(42px,6.4vw,80px);line-height:1.02;font-weight:600;letter-spacing:-.04em}
+.hero .sub{font-size:20px;line-height:1.55;color:var(--text);max-width:660px}
+.hero .ctas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.hero .fine{font-size:14px;color:var(--muted)}
+.hl{background:var(--accent-soft);color:var(--accent-deep);padding:1px 4px;border-radius:4px;font-weight:600}
+.bar{height:6px;background:var(--line-2);border-radius:4px}
+.row{display:flex;justify-content:space-between;gap:8px}
+.k{color:var(--muted)}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:none}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;align-self:flex-start}
+.badge.ok{color:var(--ok);background:var(--ok-soft)}
+.badge.warn{color:var(--warn);background:var(--warn-soft)}
+.tile-dark{display:flex;justify-content:space-between;align-items:center;background:var(--ink-2);border:1px solid var(--ink-3);border-radius:10px;padding:10px 12px;font-size:14px;transition:border-color .2s}
+.tile-dark:hover{border-color:#55514B}
+.tile-dark small{color:var(--muted-dark);font-size:12px}
+
+/* Trust strip */
+.trust{background:var(--stone);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.trust .container{display:flex;flex-wrap:wrap;gap:14px 40px;align-items:center;justify-content:space-around;padding-top:20px;padding-bottom:20px;font-size:14px;font-weight:500;color:var(--text)}
+.trust .item{display:flex;align-items:center;gap:8px}
+
+/* Trust strip (dark statement + badges) */
+.trust2{padding:8px 0 40px}
+.trust2-band{background:var(--stone);color:var(--ink);border-radius:22px;padding:24px 28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 28px}
+@media (min-width:1340px){.trust2-title{white-space:nowrap}.trust2-band .trust2-lead{flex:0 1 auto}}
+@media (max-width:1339px){.trust2-band .trust2-lead{flex:1 1 100%}}
+.trust2-lead{display:flex;align-items:center;gap:14px;flex:1 1 320px;min-width:0}
+.trust2-ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.trust2-title{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
+.trust2-badges{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px;font-weight:500}
+.trust2-badges li{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);color:var(--text);border-radius:999px;padding:8px 12px;transition:border-color .2s,background .2s}
+.trust2-badges li:hover{border-color:var(--ink);background:#fff}
+@media (max-width:560px){.trust2-band{padding:20px}.trust2-title{font-size:18px}}
+
+/* Stats */
+.stats{border-top:1px solid var(--line)}
+.stats-wrap{padding-top:88px;padding-bottom:88px;display:flex;flex-wrap:wrap;gap:48px;align-items:center}
+.stats-copy{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:18px}
+.stats-copy .h2{line-height:1.1}
+.stats-note{border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.55;color:var(--text);max-width:520px}
+.stats-tiles{flex:1 1 520px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px}
+.stat-tile{background:var(--stone);border-radius:22px;padding:32px;min-height:240px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;transition:transform .35s var(--ease),box-shadow .35s}
+.stat-tile:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(22,21,20,.1)}
+.stat-tile.dark{background:var(--ink);color:#fff}
+.st-ic{width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center}
+.stat-tile.dark .st-ic{background:var(--ink-3)}
+.st-num{font-size:64px;font-weight:700;letter-spacing:-.05em;line-height:1}
+.st-label{font-size:16px;color:var(--text);margin-top:8px}
+.stat-tile.dark .st-label{color:var(--muted-dark)}
+@media (max-width:560px){.st-num{font-size:52px}.stat-tile{min-height:200px;padding:26px}}
+
+/* Proof */
+.proof{padding:72px 0;display:flex;flex-direction:column;gap:32px}
+.proof .label{text-align:center;font-size:14px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
+.logo-slot{height:64px;border:1px dashed var(--line-3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);transition:border-color .2s,background .2s}
+.logo-slot:hover{border-color:var(--ink);background:var(--stone-2)}
+.proof-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media (max-width:820px){.proof-grid{grid-template-columns:1fr}}
+.quote{margin:0;background:var(--stone);border-radius:16px;padding:32px;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.quote blockquote{margin:0;font-size:22px;line-height:1.45;font-weight:500;letter-spacing:-.01em}
+.quote figcaption{display:flex;align-items:center;gap:12px;font-size:14px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stat{flex:1;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.stat .num{font-size:40px;font-weight:600;letter-spacing:-.03em}
+
+/* Capabilities bento */
+.cap-head{max-width:680px;margin:0 auto 40px;text-align:center;display:flex;flex-direction:column;gap:14px}
+.cap-head h2{font-size:clamp(32px,4vw,52px);line-height:1.05;font-weight:700;letter-spacing:-.04em}
+.bento{display:flex;flex-direction:column;gap:12px}
+.bento-row{display:grid;gap:12px}
+.bento-row.two{grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))}
+.bento-row.three{grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))}
+.tile{min-width:0;background:var(--stone);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s var(--ease),box-shadow .35s}
+.tile:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(22,21,20,.08)}
+.tile .stage{position:relative;overflow:hidden}
+.tile .cap{padding:0 28px 26px;text-align:center;display:flex;flex-direction:column;gap:6px}
+.tile .cap h3{font-size:16px;font-weight:700}
+.tile .cap p{margin:0 auto;max-width:340px;font-size:14px;line-height:1.5;color:var(--text)}
+/* tile 1: selection */
+.stage-doc{height:380px;padding:56px 0 0 40px;white-space:nowrap}
+.stage-doc .t1{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.stage-doc .t2{margin-top:18px;font-size:26px;color:var(--text)}
+.sel{margin-top:14px;position:relative;display:inline-block}
+.sel .word{display:inline-block;font-size:40px;font-weight:600;letter-spacing:-.02em;background:var(--accent-soft);padding:2px 8px;border-radius:4px}
+.sel .box{position:absolute;inset:-10px;border:2px solid var(--accent);border-radius:6px}
+.sel .h{position:absolute;width:10px;height:10px;background:#fff;border:2px solid var(--accent);border-radius:50%}
+.sel .tag{position:absolute;left:0;top:-54px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#fff;background:var(--ink);border-radius:999px;padding:6px 12px}
+.in-view .sel .box{animation:draw 1s var(--ease) both}
+.in-view .sel .tag{animation:pop .5s .7s var(--ease) both}
+@keyframes draw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.95)}to{opacity:1;transform:none}}
+/* tile 2: register */
+.stage-reg{height:380px;display:flex;align-items:center;justify-content:center}
+.reg-back{position:absolute;width:280px;height:180px;border-radius:18px;transition:transform .6s var(--ease)}
+.reg-back.b1{background:var(--line);transform:translate(-46px,22px) rotate(-8deg)}
+.reg-back.b2{background:#fff;border:1px solid var(--line);transform:translate(-22px,10px) rotate(-4deg)}
+.tile:hover .reg-back.b1{transform:translate(-62px,28px) rotate(-11deg)}
+.tile:hover .reg-back.b2{transform:translate(-32px,14px) rotate(-6deg)}
+.reg-front{position:relative;width:300px;background:var(--ink);color:#fff;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 48px rgba(22,21,20,.24);transform:rotate(2deg);transition:transform .6s var(--ease)}
+.tile:hover .reg-front{transform:rotate(0)}
+.reg-check{position:absolute;right:-16px;top:-16px;width:48px;height:48px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(180,35,42,.35)}
+.in-view .reg-check{animation:pop .5s .4s var(--ease) both}
+/* tile 3: merge */
+.stage-merge{height:260px;display:flex;align-items:center;justify-content:center;gap:18px}
+.chips{display:flex;flex-direction:column;gap:8px}
+.chip{font-size:15px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;transition:transform .5s var(--ease),opacity .5s}
+.chip:nth-child(1){transform:rotate(-3deg)}.chip:nth-child(2){transform:translateX(12px)}.chip:nth-child(3){transform:rotate(3deg)}
+.tile:hover .chip{transform:translateX(18px);opacity:.55}
+.merged{display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:600;color:#fff;background:var(--ink);border-radius:14px;padding:14px 18px;box-shadow:0 12px 28px rgba(22,21,20,.2);transition:transform .4s var(--ease)}
+.tile:hover .merged{transform:scale(1.06)}
+/* tile 4: scan */
+.stage-scan{height:260px;display:flex;align-items:center;justify-content:center}
+.bizcard{width:240px;height:140px;background:#fff;border-radius:10px;box-shadow:0 14px 30px rgba(22,21,20,.1);padding:18px;display:flex;flex-direction:column;gap:6px;transform:rotate(-4deg)}
+.scanframe{position:absolute;width:280px;height:180px;border:2px dashed var(--line-3);border-radius:16px}
+.scanline{position:absolute;width:260px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);top:50%;left:50%;margin-left:-130px;opacity:.7;animation:scan 2.4s ease-in-out infinite}
+@keyframes scan{0%,100%{transform:translateY(-72px)}50%{transform:translateY(72px)}}
+.scanpill{position:absolute;bottom:30px;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:10px 18px;box-shadow:0 8px 20px rgba(22,21,20,.08)}
+/* tile 5: lock */
+.stage-lock{height:260px;display:flex;align-items:center;padding-left:36px}
+.lockpill{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-right:0;border-radius:999px 0 0 999px;padding:12px 40px 12px 12px;box-shadow:0 14px 30px rgba(22,21,20,.08);width:calc(100% + 40px);margin-right:-40px;transition:transform .5s var(--ease)}
+.tile:hover .lockpill{transform:translateX(-10px)}
+.lockicon{flex:none;width:52px;height:52px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center}
+/* tile 6: word */
+.tile-wide{position:relative;background:var(--ink);color:#fff;border-radius:22px;overflow:hidden;min-height:520px;display:flex;flex-direction:column;justify-content:flex-end}
+.word-win{position:absolute;left:50%;top:56px;transform:translateX(-30%);width:min(820px,92%);height:470px;background:#fff;color:var(--ink);border-radius:16px 16px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);display:flex;overflow:hidden;transition:transform .6s var(--ease)}
+.tile-wide:hover .word-win{transform:translateX(-30%) translateY(-8px)}
+.word-doc{flex:1 1 auto;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.7;color:var(--text)}
+.word-bar{display:flex;align-items:center;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--line-2)}
+.word-bar i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.caret{display:inline-block;width:2px;height:16px;background:var(--ink);vertical-align:middle;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.addin{flex:0 0 260px;background:var(--stone-2);border-left:1px solid var(--line-2);padding:22px;display:flex;flex-direction:column;gap:12px;font-size:13px}
+.addin .search{border:1px solid var(--line-3);border-radius:8px;padding:8px 10px;background:#fff}
+.addin .opt{background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px;cursor:default;transition:border-color .2s}
+.addin .opt.sel-opt{border-color:var(--ink)}
+.wide-cap{position:relative;z-index:1;padding:140px 32px 30px;background:linear-gradient(to top,var(--ink) 45%,rgba(22,21,20,0));max-width:560px;display:flex;flex-direction:column;gap:6px}
+.wide-cap h3{font-size:18px;font-weight:700}
+.wide-cap p{font-size:14px;line-height:1.5;color:var(--muted-dark)}
+@media (max-width:760px){
+  .word-win{left:16px;right:16px;width:auto;transform:none;height:400px}
+  .tile-wide:hover .word-win{transform:translateY(-6px)}
+  .addin{display:none}
+  .stage-doc{padding-left:24px}
+}
+
+/* How it works */
+.how-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:56px}
+.how-head > div{max-width:620px;display:flex;flex-direction:column;gap:16px}
+.how-head p{max-width:420px}
+.how{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:32px;align-items:stretch}
+@media (max-width:920px){.how{grid-template-columns:1fr}}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{position:relative;text-align:left;cursor:pointer;background:transparent;border:1px solid transparent;border-radius:16px;padding:20px 22px;display:flex;gap:16px;align-items:flex-start;transition:background .25s,border-color .25s,box-shadow .25s;overflow:hidden}
+.step:hover{background:var(--stone-2)}
+.step .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--stone);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;transition:background .25s,color .25s}
+.step .lbl{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.step .ttl{display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;color:var(--text);margin-top:4px}
+.step .body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.step .body > span{overflow:hidden;font-size:15px;line-height:1.55;color:var(--text)}
+.step[aria-selected="true"]{background:#fff;border-color:var(--ink);box-shadow:0 10px 28px rgba(22,21,20,.08)}
+.step[aria-selected="true"] .n{background:var(--accent);color:#fff}
+.step[aria-selected="true"] .lbl{color:var(--accent)}
+.step[aria-selected="true"] .ttl{color:var(--ink)}
+.step[aria-selected="true"] .body{grid-template-rows:1fr}
+.step[aria-selected="true"] .body > span{padding-top:6px}
+.step .prog{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);width:0}
+.step[aria-selected="true"].playing .prog{animation:prog var(--step-ms,6000ms) linear forwards}
+@keyframes prog{to{width:100%}}
+.panel-wrap{display:flex;flex-direction:column}
+.panel{width:100%;flex:1;display:flex;flex-direction:column;gap:12px}
+.p-top{flex:1;background:var(--stone);border:1px solid var(--line);border-radius:24px;padding:40px;display:flex;align-items:center;justify-content:center;min-height:300px}
+.p-top .mock{width:100%;max-width:540px}
+.p-bottom{background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px 36px}
+.p-bottom .checks{padding:0}
+@media (max-width:560px){.p-top{padding:20px}.p-bottom{padding:22px}}
+.panel[hidden]{display:none}
+.panel.enter{animation:panelIn .45s var(--ease) both}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.mock{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;font-size:13px;box-shadow:0 12px 32px rgba(22,21,20,.06)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fields.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.field{border:1px solid var(--line-2);border-radius:10px;padding:8px 10px}
+.field .k{font-size:12px}
+.field b{font-weight:600}
+.small-btn{font-size:13px;font-weight:600;color:#fff;background:var(--ink);border:0;border-radius:8px;padding:0 14px;min-height:36px;cursor:pointer;transition:background .2s}
+.small-btn:hover{background:#000}
+.checks{list-style:none;margin:0;padding:0 4px;display:flex;flex-direction:column;gap:12px}
+.checks li{display:flex;gap:10px;font-size:16px;line-height:1.5}
+.checks svg{flex:none;margin-top:3px}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line-2);padding-top:10px}
+
+/* Bulk flow */
+.bulk-head{max-width:760px;margin:0 auto 56px;text-align:center;display:flex;flex-direction:column;gap:16px}
+.bulk{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px}
+.bulk .col{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.bulk .col h3{margin:0 0 4px;font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.src{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:15px;font-weight:600;transition:border-color .2s,transform .2s}
+.src:hover{border-color:var(--ink);transform:translateX(2px)}
+.dest{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;font-weight:600}
+.dest.soon{border-style:dashed;border-color:var(--line-3);font-weight:400;color:var(--text);font-size:14px}
+.arrow{flex:none;color:var(--line-3)}
+@media (max-width:900px){.arrow{transform:rotate(90deg);width:100%}}
+.hub{flex:1.4 1 360px;min-width:0;background:var(--ink);color:#fff;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 48px rgba(22,21,20,.16)}
+.progress{height:6px;background:var(--ink-3);border-radius:999px;overflow:hidden}
+.progress > i{display:block;height:100%;width:0;background:#fff;border-radius:999px;transition:width 1.6s var(--ease)}
+.hub-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:12px}
+.hub-stats div{background:var(--ink-2);border:1px solid var(--ink-3);border-radius:10px;padding:10px}
+.hub-stats b{display:block;font-size:18px;font-weight:600}
+.hub-stats .rev{background:#3A2E17;border-color:#5A4520;color:#F5D08A}
+.hub-stats span{color:var(--muted-dark)}
+.hub-stats .rev span{color:#F5D08A}
+
+/* Security */
+.security{background:var(--ink);color:#fff}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:48px}
+.sec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px}
+.sec-card{background:var(--ink-2);border:1px solid var(--ink-3);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:10px;transition:border-color .25s,transform .25s var(--ease)}
+.sec-card:hover{border-color:#55514B;transform:translateY(-3px)}
+.sec-card .ic{width:40px;height:40px;border-radius:10px;background:var(--ink-3);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.sec-card h3{font-size:17px;font-weight:600}
+.sec-card p{font-size:15px;line-height:1.55;color:var(--muted-dark)}
+
+/* Benefits */
+.benefits{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:40px 32px;margin:48px 0}
+.benefit{display:flex;flex-direction:column;gap:12px}
+.benefit .ic{width:44px;height:44px;border-radius:12px;background:var(--stone);display:flex;align-items:center;justify-content:center;transition:background .25s,transform .25s var(--ease)}
+.benefit:hover .ic{background:var(--accent-soft);transform:rotate(-6deg)}
+.benefit h3{font-size:18px;font-weight:600}
+.benefit p{font-size:16px;line-height:1.55;color:var(--text)}
+
+/* Pricing */
+.pricing-head{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.billing{position:relative;display:inline-flex;background:#fff;border:1px solid var(--line-3);border-radius:999px;padding:4px;margin-top:16px}
+.billing button{position:relative;z-index:1;border:0;background:transparent;border-radius:999px;padding:0 22px;min-height:44px;font-weight:600;font-size:15px;cursor:pointer;transition:color .25s}
+.billing button[aria-pressed="true"]{color:#fff}
+.billing .thumb{position:absolute;z-index:0;top:4px;bottom:4px;left:4px;border-radius:999px;background:var(--ink);transition:transform .35s var(--ease),width .35s var(--ease)}
+.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:40px;align-items:stretch}
+@media (max-width:1100px){.plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.plans{grid-template-columns:1fr}}
+.plan{min-width:0;display:flex;flex-direction:column;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#fff;transition:transform .35s var(--ease),box-shadow .35s}
+.plan:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(22,21,20,.1)}
+.plan.featured{border:3px solid var(--ink);position:relative;z-index:2;transform:scale(1.05);box-shadow:0 32px 64px rgba(22,21,20,.22),0 8px 20px rgba(22,21,20,.12)}
+.plan.featured:hover{transform:scale(1.05) translateY(-4px)}
+@media (max-width:1100px){.plan.featured,.plan.featured:hover{transform:none}}
+.plan .top{padding:26px;display:flex;flex-direction:column;gap:12px}
+.plan .eb{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.plan .kb{flex:none;width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.plan h3{font-size:28px;font-weight:700;letter-spacing:-.03em}
+.plan .desc{display:flex;flex-direction:column;gap:6px;min-height:150px}
+.plan .desc p{font-size:15px;line-height:1.5;color:var(--text)}
+.bestfor{margin-top:6px;border-top:1px solid var(--line-2);padding-top:12px;display:flex;flex-direction:column;gap:4px}
+.bestfor span:first-child{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent)}
+.bestfor span:last-child{font-size:15px;line-height:1.4;font-weight:600}
+.price{font-size:32px;font-weight:700;letter-spacing:-.03em;display:inline-block;transition:opacity .2s,transform .2s}
+.price.swap{opacity:0;transform:translateY(-6px)}
+.unit{font-size:15px;font-weight:600}
+.bill{font-size:13px;color:var(--muted)}
+.plan .cta{margin-top:6px;width:100%;border-width:2px;min-height:46px}
+.plan .cta.btn-light{border-color:var(--ink)}
+.plan .cta.btn-dark{border-color:var(--accent)}
+.plan .cta.btn-dark:hover{border-color:var(--accent-deep)}
+.plan .lower{flex:1;background:var(--stone);padding:22px 26px 30px;display:flex;flex-direction:column;gap:12px}
+.plan.featured .lower{background:var(--ink);color:#fff}
+.plan .intro{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.feats{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:15px;line-height:1.45;color:var(--text)}
+.plan.featured .feats{color:#E4E0D9}
+.feats li{display:flex;gap:10px;align-items:flex-start}
+.tick{flex:none;width:18px;height:18px;margin-top:2px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+.plan.featured .tick{background:#3A2A2A}
+.enterprise{margin-top:24px;background:var(--ink);color:#fff;border-radius:20px;padding:28px 32px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;font-weight:500}
+.tags span{border:1px solid #44403A;border-radius:999px;padding:6px 12px}
+.price-note{margin-top:20px;text-align:center;font-size:13px;color:var(--muted)}
+
+/* FAQ */
+.faq{display:flex;flex-wrap:wrap;align-items:flex-start;gap:48px 64px}
+.faq-side{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:24px}
+@media (min-width:900px){.faq-side{position:sticky;top:110px}}
+.faq-side .intro{display:flex;flex-direction:column;gap:12px}
+.topics{display:flex;flex-direction:column;gap:8px}
+.topic{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;font-size:15px;font-weight:600;border:1px solid var(--line);border-radius:14px;padding:0 18px;min-height:52px;background:#fff;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.topic:hover{border-color:var(--ink)}
+.topic .count{font-size:13px;font-weight:600;color:var(--text);background:var(--stone);border-radius:999px;padding:2px 9px;transition:background .2s,color .2s}
+.topic[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.topic[aria-selected="true"] .count{background:var(--ink-3);color:#fff}
+.faq-main{flex:999 1 560px;min-width:0}
+.qgroup{display:flex;flex-direction:column;gap:10px}
+.qgroup[hidden]{display:none}
+.qgroup.enter{animation:panelIn .4s var(--ease) both}
+.qa{border:1px solid var(--line);border-radius:16px;background:#fff;transition:background .25s,border-color .25s}
+.qa.open{background:var(--stone-2)}
+.qa:hover{border-color:var(--line-3)}
+.qa button{width:100%;text-align:left;background:transparent;border:0;padding:20px 24px;min-height:44px;display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:17px;font-weight:600;cursor:pointer}
+.qa .pm{flex:none;width:32px;height:32px;border-radius:50%;background:var(--stone);display:flex;align-items:center;justify-content:center;transition:background .25s,transform .35s var(--ease)}
+.qa .pm svg{transition:transform .35s var(--ease)}
+.qa.open .pm{background:var(--ink)}
+.qa .pm .v{transform-box:fill-box;transform-origin:center;transition:transform .35s var(--ease)}
+.qa.open .pm svg{transform:rotate(180deg)}
+.qa.open .pm .v{transform:scaleY(0)}
+.qa.open .pm svg path{stroke:#fff}
+.qa .ans{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.qa.open .ans{grid-template-rows:1fr}
+.qa .ans > div{overflow:hidden}
+.qa .ans p{padding:0 72px 22px 24px;font-size:16px;line-height:1.6;color:var(--text)}
+@media (max-width:560px){.qa .ans p{padding-right:24px}}
+
+/* CTA */
+.cta-band{background:var(--stone);border:1px solid var(--line);border-radius:24px;padding:36px clamp(24px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px}
+.cta-band .txt{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cta-band h2{font-size:clamp(26px,2.8vw,34px);line-height:1.12;font-weight:600;letter-spacing:-.03em}
+.cta-band .txt p{font-size:16px;line-height:1.5;color:var(--text)}
+.cta-band .frm{flex:1 1 400px;min-width:0;max-width:500px;display:flex;flex-direction:column;gap:10px}
+.signup{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--line-3);border-radius:999px;padding:6px;transition:border-color .2s,box-shadow .2s}
+.signup:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(22,21,20,.06)}
+.signup.err{border-color:var(--accent);box-shadow:0 0 0 4px rgba(180,35,42,.1)}
+.signup input{flex:1 1 200px;min-width:0;border:0;outline:none;padding:0 18px;min-height:48px;background:transparent;font-size:16px}
+.signup .btn{min-height:48px}
+.form-msg{padding-left:18px;font-size:13px;color:var(--muted);min-height:20px}
+.form-msg.error{color:var(--accent)}
+.form-ok{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;animation:panelIn .4s var(--ease) both}
+.form-ok .ic{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ok-soft);display:flex;align-items:center;justify-content:center}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Footer (large wordmark left, compact links right) */
+.footer{background:var(--ink);color:#fff;overflow:hidden}
+.footer .container{padding-top:72px;padding-bottom:28px}
+.foot-main{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:40px 56px;padding-bottom:56px}
+@media (min-width:900px){.foot-main{flex-wrap:nowrap}}
+.foot-brand{flex:0 1 auto;min-width:0;display:inline-flex;flex-direction:column;align-items:flex-end}
+.foot-wordmark{display:block;font-size:clamp(64px,8.6vw,150px);font-weight:700;letter-spacing:-.06em;line-height:.9;color:#fff;text-decoration:none;white-space:nowrap}
+.foot-wordmark span{color:var(--accent)}
+.foot-tag{margin:.5em .2em 0 0;font-size:clamp(12px,1.05vw,16px);font-weight:500;color:var(--muted-dark);text-align:right;white-space:nowrap}
+@media (max-width:560px){.foot-brand{align-items:flex-start}.foot-tag{text-align:left;white-space:normal;margin:1em 0 0;font-size:14px}}
+.foot-links{flex:1 1 auto;min-width:0;max-width:620px;display:grid;grid-template-columns:repeat(3,minmax(0,auto));justify-content:space-between;gap:12px 32px;padding-top:8px}
+@media (max-width:560px){.foot-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.foot-links ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;font-size:15px}
+.foot-links a{text-decoration:none;color:#fff;opacity:.85;transition:opacity .2s,color .2s}
+.foot-links a:hover{opacity:1;color:var(--accent-light)}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;border-top:1px solid var(--ink-3);padding-top:22px;font-size:13px;line-height:1.5;color:#A8A29A}
+
+/* Floating "See all plans" button */
+.float-cta{position:fixed;z-index:60;left:50%;bottom:24px;display:inline-flex;align-items:center;gap:14px;padding:6px 6px 6px 20px;border-radius:999px;text-decoration:none;color:var(--ink);
+  background:rgba(255,255,255,.82);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);
+  border:1px solid var(--line);box-shadow:0 14px 40px rgba(22,21,20,.16),0 2px 6px rgba(22,21,20,.06);
+  transform:translate(-50%,140%) scale(.96);opacity:0;pointer-events:none;transition:transform .5s var(--ease),opacity .35s,box-shadow .25s,border-color .25s}
+.float-cta.show{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}
+.float-cta:hover{border-color:var(--line-3);box-shadow:0 18px 48px rgba(22,21,20,.22),0 2px 6px rgba(22,21,20,.06);color:var(--ink)}
+.float-cta .fc-info{display:flex;align-items:center;gap:10px;white-space:nowrap;font-size:14px;color:var(--text)}
+.float-cta .fc-info b{color:var(--ink);font-weight:700}
+.float-cta .fc-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;animation:pulse 2.4s infinite}
+.float-cta .fc-btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border-radius:999px;padding:0 8px 0 18px;min-height:44px;font-size:15px;font-weight:600;white-space:nowrap;transition:background .25s}
+.float-cta .fc-btn i{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center}
+.float-cta .fc-btn svg{transition:transform .3s var(--ease)}
+.float-cta:hover .fc-btn{background:var(--accent-deep)}
+.float-cta:hover .fc-btn svg{transform:translateX(2px)}
+.float-cta:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (max-width:560px){.float-cta{bottom:16px;gap:10px;padding-left:16px}.float-cta .fc-info{font-size:13px}.float-cta .fc-info .fc-long{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  [data-reveal]{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ===== Header ===== -->
+<header class="site-header" id="siteHeader">
+  <nav class="nav" aria-label="Main">
+    <a href="#top" class="logo" aria-label="KyteOne home"><svg class="logo-svg" viewBox="0 0 600 174" role="img" aria-label="KyteOne" xmlns="http://www.w3.org/2000/svg"><g><g><g><path fill="#B62124" d="m449.95,76.5c-.46.78-.91,1.58-1.31,2.41-2.6,5.35-3.89,11.36-3.89,18.05v45.41h13.76v-44.02c0-4.08.68-7.83,2.04-11.23l-10.6-10.63Z"/><path fill="#B62124" d="m508.89,78.91c-2.64-5.34-6.49-9.6-11.54-12.76-5.05-3.16-11.33-4.74-18.84-4.74s-13.48,1.58-18.49,4.74c-2.36,1.49-4.44,3.23-6.26,5.2l10.06,10.09c1.04-1.28,2.22-2.43,3.57-3.44,2.96-2.23,6.67-3.35,11.12-3.35s8.46,1.12,11.47,3.35c3.01,2.23,5.28,5.14,6.81,8.71,1.53,3.58,2.29,7.51,2.29,11.78v43.88h13.76v-45.55c0-6.6-1.32-12.57-3.96-17.91Z"/></g><g><polygon fill="#B62124" points="98.9 154.99 98.9 139.22 51.86 86.46 85.55 50.83 74.62 50.83 74.62 38.6 68.82 38.6 23.18 86.85 23.18 38.44 0 47.75 0 142.38 23.18 142.38 23.18 116.78 37.68 101.45 85.41 154.99 98.9 154.99"/><rect fill="#B62124" x="80.68" y="25" width="19.7" height="19.75"/><rect fill="#B62124" x="70.15" y="4.79" width="13.94" height="13.98"/><rect fill="#B62124" x="90.53" width="13.94" height="13.98"/></g><g><polygon fill="currentColor" points="127.15 124.2 101.06 63.01 124.99 63.01 147.11 116.51 127.15 124.2"/><path fill="currentColor" d="m192.5,63.01l-36.34,85.65c-2.6,6.59-5.55,11.72-8.9,15.37-3.33,3.65-7.02,6.23-11.06,7.73-4.04,1.51-8.5,2.25-13.39,2.25-4.09,0-8.17-.65-12.26-1.94-4.1-1.31-7.48-3.1-10.17-5.41l8.53-16.79c1.78,1.7,3.86,3,6.2,3.9,2.35.89,4.71,1.35,7.1,1.35,3.19,0,5.77-.78,7.7-2.33,1.95-1.55,3.71-4.12,5.31-7.73l.29-.68,34.71-81.36h22.28Z"/></g><path fill="currentColor" d="m252.99,122.67c-2.59,2-5.78,3-9.57,3-2.99,0-5.36-.95-7.1-2.85-1.75-1.9-2.62-4.55-2.62-7.95v-32.7h19.89v-18h-19.89v-19.65l-23.48,9.34v10.31h-12.41v18h12.41v33.15c0,9.6,2.64,16.82,7.93,21.67,5.28,4.85,12.66,7.27,22.14,7.27,3.59,0,7.05-.43,10.39-1.27,3.34-.85,6.15-2.12,8.45-3.83l-6.13-16.5Z"/><path fill="currentColor" d="m341.71,80.91c-3.62-6.2-8.54-10.99-14.76-14.39-6.22-3.4-13.2-5.1-20.93-5.1s-15.25,1.78-21.66,5.32c-6.41,3.55-11.41,8.47-14.98,14.77-3.58,6.3-5.36,13.44-5.36,21.44s1.86,15.12,5.58,21.36c3.72,6.25,8.96,11.17,15.72,14.77,6.76,3.6,14.64,5.4,23.65,5.4,7.15,0,13.46-1.13,18.95-3.37,5.48-2.25,10.04-5.47,13.66-9.67l-12.19-13.49c-2.64,2.6-5.56,4.55-8.74,5.85-3.18,1.3-6.83,1.95-10.94,1.95-4.8,0-8.91-.87-12.34-2.62-3.43-1.75-6.12-4.27-8.08-7.57-1.08-1.81-1.83-3.82-2.31-6h59.74c.1-1,.2-2.07.29-3.22.1-1.15.15-2.17.15-3.07,0-8.7-1.81-16.14-5.44-22.34Zm-45.9.82c2.99-1.75,6.44-2.62,10.35-2.62s7.34.88,10.28,2.62c2.94,1.75,5.24,4.17,6.9,7.27,1.1,2.05,1.78,4.36,2.11,6.9h-38.77c.38-2.5,1.07-4.79,2.14-6.82,1.66-3.15,3.99-5.6,6.98-7.35Z"/><path fill="#B62124" d="m594.94,81.3c-3.38-6.29-8.04-11.18-13.98-14.66-5.94-3.48-12.8-5.22-20.55-5.22s-14.53,1.77-20.63,5.3c-6.1,3.53-10.88,8.42-14.36,14.66-1.68,3.01-2.94,6.25-3.81,9.69h14.39c.48-1.42,1.04-2.79,1.73-4.09,2.22-4.14,5.29-7.37,9.22-9.67,3.93-2.3,8.41-3.45,13.45-3.45s9.65,1.15,13.53,3.45c3.88,2.3,6.93,5.5,9.14,9.59,1.68,3.1,2.69,6.53,3.04,10.28h-65.6c-.2,1.84-.31,3.73-.31,5.68,0,8.08,1.79,15.25,5.36,21.49,3.57,6.24,8.61,11.16,15.11,14.74,6.5,3.58,14.03,5.37,22.59,5.37,6.65,0,12.67-1.12,18.06-3.38,5.39-2.25,9.9-5.53,13.53-9.82l-8.01-9.52c-2.92,3.28-6.32,5.73-10.2,7.37-3.88,1.64-8.19,2.46-12.92,2.46-5.74,0-10.83-1.18-15.26-3.53-4.44-2.35-7.89-5.65-10.35-9.9-1.82-3.13-2.97-6.59-3.44-10.36h65.03c.1-.71.17-1.48.23-2.3.05-.82.08-1.53.08-2.15,0-8.39-1.69-15.73-5.06-22.03Z"/><g><path fill="#B62124" d="m399.82,61.42v13.55c13.74,1.84,24.34,13.64,24.34,27.92s-10.6,26.08-24.34,27.92v13.55c21.17-1.91,37.77-19.74,37.77-41.47s-16.6-39.56-37.77-41.47Z"/><path fill="#B62124" d="m367.96,102.89c0-14.28,10.6-26.08,24.34-27.92v-13.55c-21.17,1.91-37.77,19.74-37.77,41.47s16.6,39.56,37.77,41.47v-13.55c-13.74-1.84-24.34-13.64-24.34-27.92Z"/></g></g></g></svg></a>
+    <div class="nav-links">
+      <a href="#capabilities">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#security">Security</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <a href="#signin" class="signin">Sign in</a>
+      <a href="#start" class="btn btn-dark">Start free</a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path id="menuIcon" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <a href="#capabilities">Product</a>
+    <a href="#how">How it works</a>
+    <a href="#security">Security</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#signin">Sign in</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="top">
+  <!-- Decorative scanning elements in the side whitespace (hidden on smaller screens) -->
+  <div class="deco" aria-hidden="true" id="deco">
+    <!-- Left: document being scanned -->
+    <div class="f" data-depth="18" style="right:max(24px, calc(50% - 690px));top:70px">
+      <div class="d-doc" style="rotate:6deg">
+        <span class="cb" style="left:6px;top:6px;border-width:2px 0 0 2px;border-radius:4px 0 0 0"></span>
+        <span class="cb" style="right:6px;top:6px;border-width:2px 2px 0 0;border-radius:0 4px 0 0"></span>
+        <span class="cb" style="left:6px;bottom:6px;border-width:0 0 2px 2px;border-radius:0 0 0 4px"></span>
+        <span class="cb" style="right:6px;bottom:6px;border-width:0 2px 2px 0;border-radius:0 0 4px 0"></span>
+        <div class="ln" style="width:85%"></div>
+        <span class="hw">Priya Shah</span>
+        <div class="ln" style="width:70%"></div>
+        <div class="ln" style="width:55%"></div>
+        <span class="sl"></span>
+      </div>
+    </div>
+    <!-- Left: scanning status -->
+    <div class="f d2" data-depth="30" style="left:max(40px, calc(50% - 640px));top:400px">
+      <div class="d-pill"><span class="ring"></span><span>Reading files…</span></div>
+    </div>
+    <!-- Right: extracted contact -->
+    <div class="f d3" data-depth="22" style="left:max(24px, calc(50% - 680px));top:110px">
+      <div class="d-contact" style="rotate:-6deg;width:auto;flex-direction:row;align-items:center;gap:12px;padding:12px 16px 12px 12px">
+        <div class="avatar" style="width:36px;height:36px;font-size:12px">PS</div>
+        <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:14px;font-weight:600">Priya Shah</span><span class="badge ok" style="font-size:11px;padding:2px 8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Verified</span></div>
+      </div>
+    </div>
+    <!-- Right: detected fields -->
+    <div class="f d4" data-depth="34" style="right:max(56px, calc(50% - 650px));top:380px;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+      <div class="d-chip" style="rotate:-3deg"><span class="tg">EMAIL</span>Found</div>
+      <div class="d-chip" style="rotate:2deg;margin-right:24px"><span class="tg">PHONE</span>Found</div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="hero-stage">
+    <div class="hero-copy">
+      <div class="pill" data-reveal><span class="dot pulse"></span>Now in pilot with law and professional-services firms</div>
+      <h1 data-reveal data-reveal-delay="1">Every document in.<br>Trusted contacts out.</h1>
+      <p class="sub" data-reveal data-reveal-delay="2">KyteOne reads business contacts from any file, checks them against official records and puts them into Word, Outlook and your CRM.</p>
+      <div class="ctas" data-reveal data-reveal-delay="3">
+        <a href="#start" class="btn btn-dark btn-lg">Start free</a>
+        <a href="#demo" class="btn btn-light btn-lg">Book a demo</a>
+      </div>
+      <p class="fine">Free plan available · Paid plans from $29 per user / month, billed annually</p>
+    </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== Trust strip ===== -->
+<section class="trust2" aria-label="Data promises">
+  <div class="container">
+    <div class="trust2-band" data-reveal>
+      <div class="trust2-lead">
+        <span class="trust2-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <span class="trust2-title">Built for firms that handle sensitive data.</span>
+      </div>
+      <ul class="trust2-badges">
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>You own your data</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Encrypted at all times</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg>Never used to train AI</li>
+        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/></svg>Stored in [REGION]</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Stats ===== -->
+<section class="stats" id="numbers" aria-label="KyteOne in numbers">
+  <div class="container stats-wrap">
+    <div class="stats-copy" data-reveal>
+      <p class="eyebrow">The technology behind KyteOne</p>
+      <h2 class="h2">Proven technology.<br>Already hard at work.</h2>
+      <div class="stats-note">
+        <p>Activity across the connector technology that powers KyteOne, including its existing deployment.</p>
+        <p>12-month snapshot ending 26 Nov 2026. Counts reflect extraction records and import jobs, including repeat imports — not unique contacts.</p>
+      </div>
+    </div>
+    <div class="stats-tiles">
+      <div class="stat-tile" data-reveal data-reveal-delay="1">
+        <span class="st-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+        <div><div class="st-num"><span data-count="125" data-suffix="K">125K</span><span style="color:var(--accent)">+</span></div><div class="st-label">Records extracted</div></div>
+      </div>
+      <div class="stat-tile dark" data-reveal data-reveal-delay="2">
+        <span class="st-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span>
+        <div><div class="st-num"><span data-count="764">764</span></div><div class="st-label">Import jobs</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Capabilities ===== -->
+<section class="section" id="capabilities">
+  <div class="container" style="max-width:1340px;padding-top:88px;padding-bottom:88px">
+    <div class="cap-head" data-reveal>
+      <p class="eyebrow">Product capabilities</p>
+      <h2>Every contact detail, captured and checked.</h2>
+      <p class="lead">Read, match, verify and insert business contacts with tools built for professional-services firms. No learning curve.</p>
+    </div>
+
+    <div class="bento">
+      <div class="bento-row two">
+        <article class="tile" data-reveal data-anim>
+          <div class="stage stage-doc" aria-hidden="true">
+            <div class="t1">Engagement letter</div>
+            <div class="t2">between our client and</div>
+            <div class="sel">
+              <span class="word">Northstar Studio Ltd</span>
+              <span class="box"></span>
+              <span class="h" style="left:-15px;top:-15px"></span><span class="h" style="right:-15px;top:-15px"></span>
+              <span class="h" style="left:-15px;bottom:-15px"></span><span class="h" style="right:-15px;bottom:-15px"></span>
+              <span class="tag"><span class="dot" style="width:6px;height:6px;background:var(--accent-light)"></span>Company detected</span>
+            </div>
+            <div class="t2" style="margin-top:28px">(company no. 09876543), whose registered</div>
+          </div>
+          <div class="cap"><h3>Read any file.</h3><p>PDFs, scans, photos, emails and web pages. Every detail links back to its source.</p></div>
+        </article>
+
+        <article class="tile" data-reveal data-reveal-delay="1" data-anim>
+          <div class="stage stage-reg" aria-hidden="true">
+            <div class="reg-back b1"></div>
+            <div class="reg-back b2"></div>
+            <div class="reg-front">
+              <div style="font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted-dark)">COMPANY REGISTER</div>
+              <div style="font-size:22px;font-weight:600;letter-spacing:-.02em">Northstar Studio Ltd</div>
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted-dark)">
+                <div class="row"><span>Status</span><span style="color:#fff;font-weight:600">Active</span></div>
+                <div class="row"><span>Company no.</span><span style="color:#fff;font-weight:600">09876543</span></div>
+              </div>
+              <span class="reg-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            </div>
+          </div>
+          <div class="cap"><h3>Checked against official records.</h3><p>Company names, numbers and addresses are checked against company registers. Stale details are flagged.</p></div>
+        </article>
+      </div>
+
+      <div class="bento-row three">
+        <article class="tile" data-reveal>
+          <div class="stage stage-merge" aria-hidden="true">
+            <div class="chips"><span class="chip">J. Smith</span><span class="chip">Jon Smith</span><span class="chip">John Smith</span></div>
+            <svg width="36" height="24" viewBox="0 0 36 24" fill="none" stroke="#6B665E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h30"/><path d="m26 6 6 6-6 6"/></svg>
+            <span class="merged"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>John Smith</span>
+          </div>
+          <div class="cap"><h3>Duplicates, merged.</h3><p>One record per person and company. Every merge is recorded.</p></div>
+        </article>
+
+        <article class="tile" data-reveal data-reveal-delay="1">
+          <div class="stage stage-scan" aria-hidden="true">
+            <div class="bizcard">
+              <div style="font-size:15px;font-weight:700">Priya Shah</div>
+              <div class="k" style="font-size:12px">Partner · Harbour &amp; Pike LLP</div>
+              <div class="bar" style="margin-top:auto;height:5px;width:70%"></div>
+              <div class="bar" style="height:5px;width:50%"></div>
+            </div>
+            <span class="scanframe"></span>
+            <span class="scanline"></span>
+            <span class="scanpill"><span class="dot pulse" style="width:7px;height:7px"></span>Reading business card…</span>
+          </div>
+          <div class="cap"><h3>Paper to contacts.</h3><p>Reads printed, scanned and photographed documents and business cards.</p></div>
+        </article>
+
+        <article class="tile" data-reveal data-reveal-delay="2">
+          <div class="stage stage-lock" aria-hidden="true">
+            <div class="lockpill">
+              <span class="lockicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+              <span style="display:flex;flex-direction:column;gap:2px;white-space:nowrap"><span style="font-size:16px;font-weight:600">Encrypted at all times</span><span class="k" style="font-size:13px">Never used to train AI</span></span>
+            </div>
+          </div>
+          <div class="cap"><h3>Your data stays yours.</h3><p>Only people you invite can see it. Export or delete everything, any time.</p></div>
+        </article>
+      </div>
+
+      <article class="tile-wide" data-reveal>
+        <div class="word-win" aria-hidden="true">
+          <div class="word-doc">
+            <div class="word-bar"><i></i><i></i><i></i><span class="k" style="margin-left:10px;font-size:12px">Share purchase agreement.docx</span></div>
+            <div style="font-size:18px;font-weight:700;color:var(--ink)">1. Parties</div>
+            <div>This agreement is made between <span class="hl">Northstar Studio Ltd</span> (company no. 09876543), whose registered office is at 2 Canal Wharf, London, and <span id="typed">@</span><span class="caret"></span></div>
+            <div class="bar" style="height:7px;width:88%;margin-top:8px"></div>
+            <div class="bar" style="height:7px;width:72%"></div>
+            <div class="bar" style="height:7px;width:80%"></div>
+          </div>
+          <div class="addin">
+            <div style="font-weight:700;letter-spacing:-.02em;font-size:15px">Kyte<span style="color:var(--accent)">One</span> <span class="k" style="font-weight:500">add-in</span></div>
+            <div class="search" id="typedSearch">@</div>
+            <div class="opt sel-opt"><div style="font-weight:600">Harbour &amp; Pike LLP</div><div class="k">Priya Shah, Partner</div><div style="font-size:12px;color:var(--ok);font-weight:600">Verified · Company register</div></div>
+            <div class="opt k">Harbour Street Holdings</div>
+          </div>
+        </div>
+        <div class="wide-cap"><h3>Insert a verified party in one click.</h3><p>Type @ in Word or Outlook to add a party’s legal name, company number, registered office and signatory, in your firm’s house style.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== How it works ===== -->
+<section class="section" id="how">
+  <div class="container pad">
+    <div class="how-head" data-reveal>
+      <div><p class="eyebrow">How it works</p><h2 class="h2">The contact record your firm can trust, in four steps.</h2></div>
+      <p class="lead">Stop searching through inboxes, files and systems. KyteOne gives your whole team one verified place for every business contact.</p>
+    </div>
+
+    <div class="how" data-reveal>
+      <div class="steps" role="tablist" aria-label="Steps" aria-orientation="vertical" id="steps">
+        <button class="step" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" tabindex="0" type="button">
+          <span class="n">01</span><span><span class="lbl">CAPTURE</span><span class="ttl">Turn any file into contacts.</span><span class="body"><span>PDFs, scans, photos, emails, documents and websites, one at a time or in bulk. KyteOne finds every useful detail and keeps a link to where it came from.</span></span></span><span class="prog"></span>
+        </button>
+        <button class="step" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" tabindex="-1" type="button">
+          <span class="n">02</span><span><span class="lbl">MATCH</span><span class="ttl">Matched to the people you already know.</span><span class="body"><span>KyteOne spots duplicates and suggests merges field by field. Nothing is overwritten without a record of the old value.</span></span></span><span class="prog"></span>
+        </button>
+        <button class="step" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" tabindex="-1" type="button">
+          <span class="n">03</span><span><span class="lbl">VERIFY</span><span class="ttl">Checked against official records.</span><span class="body"><span>Company names, numbers and registered addresses are checked against official company registers. Details that go stale are flagged.</span></span></span><span class="prog"></span>
+        </button>
+        <button class="step" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" tabindex="-1" type="button">
+          <span class="n">04</span><span><span class="lbl">USE</span><span class="ttl">Inserted in one click, wherever you work.</span><span class="body"><span>Search or type @ in Word or Outlook to insert a verified party, in your firm’s house style.</span></span></span><span class="prog"></span>
+        </button>
+      </div>
+
+      <div class="panel-wrap">
+        <div class="panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1">
+          <div class="p-top">
+          <div class="mock">
+            <div class="row"><span style="font-weight:600">business-card.jpg</span><span class="k">6 fields</span></div>
+            <div class="fields">
+              <div class="field"><div class="k">Name</div><b>Priya Shah</b></div>
+              <div class="field"><div class="k">Role</div><b>Partner</b></div>
+              <div class="field"><div class="k">Company</div><b>Harbour &amp; Pike LLP</b></div>
+              <div class="field"><div class="k">Phone</div><b>+44 161 496 0000</b></div>
+            </div>
+          </div>
+          </div>
+          <div class="p-bottom"><ul class="checks">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Reads printed, scanned and photographed documents</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Picks up names, roles, companies, emails, phones and addresses</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Links each detail back to its source file</li>
+          </ul></div>
+        </div>
+
+        <div class="panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
+          <div class="p-top">
+          <div class="mock">
+            <div class="row" style="flex-wrap:wrap"><span style="font-weight:600">Match suggestion · 3 records</span><span class="badge warn">Needs review</span></div>
+            <div class="fields three">
+              <div class="field"><div class="k">Outlook</div><b>J. Smith</b></div>
+              <div class="field"><div class="k">Clio</div><b>Jon Smith</b></div>
+              <div class="field"><div class="k">Contract.pdf</div><b>John Smith</b></div>
+            </div>
+            <div class="row" style="align-items:center;flex-wrap:wrap">
+              <span style="color:var(--text)">Suggested name: <b style="color:var(--ink)">John Smith</b> · old values kept</span>
+              <button type="button" class="small-btn" data-demo-merge>Review merge</button>
+            </div>
+          </div>
+          </div>
+          <div class="p-bottom"><ul class="checks">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Finds ‘J. Smith’, ‘Jon Smith’ and ‘John Smith’</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Uncertain matches wait for a person to review</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Every merge and edit is recorded</li>
+          </ul></div>
+        </div>
+
+        <div class="panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden>
+          <div class="p-top">
+          <div class="mock" style="gap:10px">
+            <div class="row" style="flex-wrap:wrap;font-size:12px"><span style="font-weight:600;color:var(--ink);font-size:13px">Northstar Studio Ltd</span><span class="k">Last checked today · Company register</span></div>
+            <div class="mrow"><span>Company name</span><span class="badge ok">Matches</span></div>
+            <div class="mrow"><span>Company status</span><span class="badge ok">Active</span></div>
+            <div class="mrow"><span>Registered address</span><span class="badge warn">Flagged</span></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="k">Held: 14 Old Mill Lane</span><span aria-hidden="true">→</span><b>Register: 2 Canal Wharf, London</b></div>
+          </div>
+          </div>
+          <div class="p-bottom"><ul class="checks">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Shows when and how each contact was last checked</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Flags dissolved companies and changed addresses</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Mismatches are flagged, never silently changed</li>
+          </ul></div>
+        </div>
+
+        <div class="panel" role="tabpanel" id="panel-4" aria-labelledby="tab-4" hidden>
+          <div class="p-top">
+          <div class="mock" style="gap:10px">
+            <div class="row"><span style="font-weight:600">Share purchase agreement.docx</span><span class="k">Word</span></div>
+            <div style="line-height:1.6;color:var(--text)">This agreement is made between <span class="hl">Northstar Studio Ltd</span> (company no. 09876543), whose registered office is at 2 Canal Wharf, London, signed by Alex Morgan, Director.</div>
+            <div class="mrow" style="flex-wrap:wrap"><span class="badge ok"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Verified · view source</span><span class="k" style="font-size:12px">Inserted via @Northstar</span></div>
+          </div>
+          </div>
+          <div class="p-bottom"><ul class="checks">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Legal name, company number, registered office and signatory</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Works in Word desktop and Word online</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Click the badge to see the source document</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Bulk + CRM ===== -->
+<section class="section" id="bulk">
+  <div class="container pad">
+    <div class="bulk-head" data-reveal>
+      <p class="eyebrow">Bulk processing · Your CRM, your choice</p>
+      <h2 class="h2">One file or thousands in. Clean contacts out, to the CRM you choose.</h2>
+      <p class="lead" style="font-size:18px">Upload whole folders and drives. KyteOne works in the background, then syncs to its built-in CRM or the one you already use.</p>
+    </div>
+    <div class="bulk">
+      <div class="col" data-reveal>
+        <h3>WHAT YOU UPLOAD</h3>
+        <div class="src"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#161514" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Folders</div>
+        <div class="src"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#161514" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M10 7h2M10 11h2M10 15h2"/></svg>ZIP files</div>
+        <div class="src"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#161514" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>Shared drives</div>
+        <div class="src"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#161514" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Inboxes</div>
+      </div>
+      <svg class="arrow" width="40" height="24" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h34"/><path d="m30 6 6 6-6 6"/></svg>
+      <div class="hub" id="hub" data-reveal data-reveal-delay="1">
+        <div class="row" style="align-items:center"><span style="font-size:20px;font-weight:700;letter-spacing:-.03em">Kyte<span style="color:var(--accent-light)">One</span></span><span style="font-size:12px;color:var(--muted-dark)">Working in the background</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+          <div class="row"><span style="font-weight:600">Client_files_2025.zip</span><span style="color:var(--muted-dark)"><span data-count="843">843</span> / 1,240 files</span></div>
+          <div class="progress" role="progressbar" aria-label="Import progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="68"><i id="hubBar"></i></div>
+        </div>
+        <div class="hub-stats">
+          <div><b data-count="312">312</b><span>contacts found</span></div>
+          <div><b data-count="41">41</b><span>duplicates merged</span></div>
+          <div class="rev"><b data-count="14">14</b><span>need review</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted-dark)">You get one review queue for anything uncertain.</div>
+      </div>
+      <svg class="arrow" width="40" height="24" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h34"/><path d="m30 6 6 6-6 6"/></svg>
+      <div class="col" data-reveal data-reveal-delay="2" style="flex-basis:260px">
+        <h3>WHERE IT GOES</h3>
+        <div class="dest"><span>Built-in CRM</span><span class="badge ok">Available</span></div>
+        <div class="dest"><span>Clio</span><span class="badge ok">Available</span></div>
+        <div class="dest"><span>CSV and Excel</span><span class="badge ok">Available</span></div>
+        <div class="dest soon"><span>HubSpot · Salesforce · M365</span><span class="badge" style="background:var(--stone);color:var(--text)">Soon</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Security ===== -->
+<section class="security" id="security">
+  <div class="container pad">
+    <div class="sec-head" data-reveal>
+      <div style="max-width:640px;display:flex;flex-direction:column;gap:16px"><p class="eyebrow" style="color:var(--accent-light)">Security &amp; privacy</p><h2 class="h2">Your contacts stay yours.</h2></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><a href="#security-overview" class="btn btn-ghost-dark">Read our security overview</a><a href="#dpa" class="btn btn-ghost-dark">Download the DPA</a></div>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card" data-reveal><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></div><h3>You own your data</h3><p>Only people you invite can see your contacts. Export or delete everything, any time.</p></div>
+      <div class="sec-card" data-reveal data-reveal-delay="1"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>Encrypted at all times</h3><p>Files are processed securely and encrypted in transit and at rest.</p></div>
+      <div class="sec-card" data-reveal data-reveal-delay="2"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></div><h3>Never used to train AI</h3><p>Your documents and contacts are never used to train any model.</p></div>
+      <div class="sec-card" data-reveal data-reveal-delay="3"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/></svg></div><h3>Stored in [REGION]</h3><p>[Hosting provider and data-centre location. Link to the sub-processor list.]</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Benefits ===== -->
+<section>
+  <div class="container pad">
+    <h2 class="h2" style="max-width:640px" data-reveal>Less searching. Fewer mistakes. Easier GDPR.</h2>
+    <div class="benefits">
+      <div class="benefit" data-reveal><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>Less searching</h3><p>Find the right contact in seconds, not across five systems.</p></div>
+      <div class="benefit" data-reveal data-reveal-delay="1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><h3>Fewer mistakes</h3><p>Out-of-date details are flagged before they reach a contract.</p></div>
+      <div class="benefit" data-reveal data-reveal-delay="2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></div><h3>Easier GDPR</h3><p>Find, export or delete everything held on a person in one step.</p></div>
+      <div class="benefit" data-reveal><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 4a4 4 0 0 1 0 8"/></svg></div><h3>No duplicates</h3><p>One record per person and company, matched and merged.</p></div>
+      <div class="benefit" data-reveal data-reveal-delay="1"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></div><h3>Every detail sourced</h3><p>Click any field to see the document and page it came from.</p></div>
+      <div class="benefit" data-reveal data-reveal-delay="2"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></div><h3>No lock-in</h3><p>Import thousands of contacts and export any list, any time.</p></div>
+    </div>
+    <p class="k" style="font-size:15px">On the roadmap: relationship mapping, to see who at your firm knows whom, built only from your own data.</p>
+  </div>
+</section>
+
+<!-- ===== Pricing ===== -->
+<section class="section" id="pricing">
+  <div class="container" style="max-width:1340px;padding-top:88px;padding-bottom:96px">
+    <div class="pricing-head" data-reveal>
+      <h2 class="h2">Plans that grow with your firm</h2>
+      <p class="lead">Start free. Upgrade when your team is ready. Pilot firms: [PILOT TERMS].</p>
+      <div class="billing" role="group" aria-label="Billing period" id="billing">
+        <span class="thumb" aria-hidden="true"></span>
+        <button type="button" aria-pressed="true" data-period="annual">Annual</button>
+        <button type="button" aria-pressed="false" data-period="monthly">Monthly</button>
+      </div>
+    </div>
+
+    <div class="plans">
+      <!-- Free -->
+      <article class="plan" data-reveal>
+        <div class="top">
+          <div class="eb"><span class="kb"><svg viewBox="0 0 337 500" width="11" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g><g><g><polygon fill="#FFFFFF" points="319.04 500 319.04 449.14 167.29 278.91 275.97 163.97 240.71 163.97 240.71 124.51 221.98 124.51 74.78 280.19 74.78 124.02 0 154.04 0 459.31 74.78 459.31 74.78 376.75 121.55 327.29 275.51 500 319.04 500"/><rect fill="#FFFFFF" x="260.26" y="80.64" width="63.54" height="63.73"/><rect fill="#FFFFFF" x="226.3" y="15.44" width="44.97" height="45.1"/><rect fill="#FFFFFF" x="292.03" width="44.97" height="45.1"/></g></g></g></svg></span>Start here</div>
+          <h3>Free</h3>
+          <div class="desc"><p>Try KyteOne on your own contacts.</p><div class="bestfor"><span>BEST FOR</span><span>One person trying it out</span></div></div>
+          <div><span class="price">$0</span><div class="bill">Forever</div></div>
+          <a href="#start" class="btn btn-light cta">Start free</a>
+        </div>
+        <div class="lower">
+          <div class="intro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Includes</div>
+          <ul class="feats">
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>1 user</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>50 documents a month</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Duplicate check</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Export to CSV</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Connect -->
+      <article class="plan" data-reveal data-reveal-delay="1">
+        <div class="top">
+          <div class="eb"><span class="kb"><svg viewBox="0 0 337 500" width="11" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g><g><g><polygon fill="#FFFFFF" points="319.04 500 319.04 449.14 167.29 278.91 275.97 163.97 240.71 163.97 240.71 124.51 221.98 124.51 74.78 280.19 74.78 124.02 0 154.04 0 459.31 74.78 459.31 74.78 376.75 121.55 327.29 275.51 500 319.04 500"/><rect fill="#FFFFFF" x="260.26" y="80.64" width="63.54" height="63.73"/><rect fill="#FFFFFF" x="226.3" y="15.44" width="44.97" height="45.1"/><rect fill="#FFFFFF" x="292.03" width="44.97" height="45.1"/></g></g></g></svg></span>Keep your CRM</div>
+          <h3>Connect</h3>
+          <div class="desc"><p>Keep your CRM. Add verified contacts.</p><div class="bestfor"><span>BEST FOR</span><span>Teams already on Clio or spreadsheets</span></div></div>
+          <div><span class="price" data-annual="$29" data-monthly="$[ ]">$29</span><span class="unit">/user/mo</span><div class="bill" data-annual="Billed annually, excl. taxes" data-monthly="Billed monthly [SET PRICE]">Billed annually, excl. taxes</div></div>
+          <a href="#start" class="btn btn-light cta">Choose Connect</a>
+        </div>
+        <div class="lower">
+          <div class="intro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Everything in Free, plus</div>
+          <ul class="feats">
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>500 documents per user, shared</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Match, merge and update</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Sync with Clio, more CRMs coming</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Company register checks</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Pro -->
+      <article class="plan featured" data-reveal data-reveal-delay="2">
+        <div class="top">
+          <div class="eb"><span class="kb"><svg viewBox="0 0 337 500" width="11" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g><g><g><polygon fill="#FFFFFF" points="319.04 500 319.04 449.14 167.29 278.91 275.97 163.97 240.71 163.97 240.71 124.51 221.98 124.51 74.78 280.19 74.78 124.02 0 154.04 0 459.31 74.78 459.31 74.78 376.75 121.55 327.29 275.51 500 319.04 500"/><rect fill="#FFFFFF" x="260.26" y="80.64" width="63.54" height="63.73"/><rect fill="#FFFFFF" x="226.3" y="15.44" width="44.97" height="45.1"/><rect fill="#FFFFFF" x="292.03" width="44.97" height="45.1"/></g></g></g></svg></span>Most popular · Built-in CRM</div>
+          <h3>Pro</h3>
+          <div class="desc"><p>Our built-in CRM, ready from day one.</p><div class="bestfor"><span>BEST FOR</span><span>Firms that want one place for contacts</span></div></div>
+          <div><span class="price" data-annual="$59" data-monthly="$[ ]">$59</span><span class="unit">/user/mo</span><div class="bill" data-annual="Billed annually, excl. taxes" data-monthly="Billed monthly [SET PRICE]">Billed annually, excl. taxes</div></div>
+          <a href="#start" class="btn btn-dark cta">Choose Pro</a>
+        </div>
+        <div class="lower">
+          <div class="intro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Everything in Connect, plus</div>
+          <ul class="feats">
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>2,000 documents per user, shared</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Built-in CRM</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Word and Outlook add-ins</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Source link for every detail</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F2A7AA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Bulk import from inboxes and drives</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Legal -->
+      <article class="plan" data-reveal data-reveal-delay="3">
+        <div class="top">
+          <div class="eb"><span class="kb"><svg viewBox="0 0 337 500" width="11" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><g><g><g><polygon fill="#FFFFFF" points="319.04 500 319.04 449.14 167.29 278.91 275.97 163.97 240.71 163.97 240.71 124.51 221.98 124.51 74.78 280.19 74.78 124.02 0 154.04 0 459.31 74.78 459.31 74.78 376.75 121.55 327.29 275.51 500 319.04 500"/><rect fill="#FFFFFF" x="260.26" y="80.64" width="63.54" height="63.73"/><rect fill="#FFFFFF" x="226.3" y="15.44" width="44.97" height="45.1"/><rect fill="#FFFFFF" x="292.03" width="44.97" height="45.1"/></g></g></g></svg></span>Built for law firms</div>
+          <h3>Legal</h3>
+          <div class="desc"><p>For law firms and regulated teams.</p><div class="bestfor"><span>BEST FOR</span><span>Matters and conflict checks</span></div></div>
+          <div><span class="price" data-annual="$89" data-monthly="$[ ]">$89</span><span class="unit">/user/mo</span><div class="bill" data-annual="Billed annually, excl. taxes" data-monthly="Billed monthly [SET PRICE]">Billed annually, excl. taxes</div></div>
+          <a href="#start" class="btn btn-light cta">Choose Legal</a>
+        </div>
+        <div class="lower">
+          <div class="intro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Everything in Pro, plus</div>
+          <ul class="feats">
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Contacts linked to matters</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Conflict-check search</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Full audit trail</li>
+            <li><span class="tick"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#B4232A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Single sign-on</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <div class="enterprise" data-reveal>
+      <div style="flex:1 1 420px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><span style="font-size:20px;font-weight:700">Enterprise</span><span style="font-size:14px;color:var(--muted-dark)">For firms with 25 or more users</span></div>
+        <div class="tags"><span>Private deployment</span><span>Service-level agreement</span><span>Data processing agreement</span></div>
+      </div>
+      <a href="#demo" class="btn btn-ghost-dark">Book a demo</a>
+    </div>
+    <p class="price-note">Prices per user per month, in US dollars, excluding taxes. Need more documents? Extra documents are $0.05 each.</p>
+  </div>
+</section>
+
+<!-- ===== Proof ===== -->
+<section class="section" aria-label="Customers">
+  <div class="container proof">
+    <p class="label" data-reveal>Used by firms in our pilot</p>
+    <div class="logos" data-reveal>
+      <div class="logo-slot">[Client logo]</div><div class="logo-slot">[Client logo]</div><div class="logo-slot">[Client logo]</div><div class="logo-slot">[Client logo]</div><div class="logo-slot">[Client logo]</div>
+    </div>
+    <div class="proof-grid">
+      <figure class="quote" data-reveal>
+        <blockquote>“[Quote from a pilot customer: a specific result, e.g. time saved per week or an error caught before it reached a contract.]”</blockquote>
+        <figcaption><div class="avatar" style="background:var(--line)"></div><div><div style="font-weight:600">[Name]</div><div class="k">[Role], [Firm]</div></div></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="section" id="faq">
+  <div class="container faq" style="padding-top:96px;padding-bottom:72px">
+    <div class="faq-side" data-reveal>
+      <div class="intro">
+        <p class="eyebrow">FAQ</p>
+        <h2 class="h2">Questions, answered</h2>
+        <p style="font-size:15px;line-height:1.55;color:var(--text)">Still have a question? Email <a href="mailto:support@yourdomain">[support@yourdomain]</a> or <a href="#demo">book a demo</a>.</p>
+      </div>
+      <div class="topics" role="tablist" aria-label="Question topics" aria-orientation="vertical" id="topics">
+        <button class="topic" role="tab" id="t-product" aria-controls="g-product" aria-selected="true" tabindex="0" type="button"><span>Product</span><span class="count">4</span></button>
+        <button class="topic" role="tab" id="t-crm" aria-controls="g-crm" aria-selected="false" tabindex="-1" type="button"><span>CRM &amp; integrations</span><span class="count">3</span></button>
+        <button class="topic" role="tab" id="t-data" aria-controls="g-data" aria-selected="false" tabindex="-1" type="button"><span>Data &amp; security</span><span class="count">4</span></button>
+      </div>
+    </div>
+
+    <div class="faq-main" data-reveal data-reveal-delay="1">
+      <div class="qgroup" role="tabpanel" id="g-product" aria-labelledby="t-product">
+        <div class="qa open"><button type="button" aria-expanded="true"><span>What file types can KyteOne read?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>PDFs, Word documents, spreadsheets, emails, photos and scans, vCards and public web pages.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Can I process files in bulk?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>Yes. Upload folders, ZIP files or whole shared drives. KyteOne processes them in the background and tells you when results are ready.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>How does KyteOne check details are correct?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>Company details are checked against official records such as the company register. [List the exact sources you check.]</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>What happens to duplicates?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>KyteOne matches and merges them into one record per person and company. Anything uncertain goes to a review queue.</p></div></div></div>
+      </div>
+      <div class="qgroup" role="tabpanel" id="g-crm" aria-labelledby="t-crm" hidden>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Do I need a CRM already?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>No. You can use the built-in contact manager on the Pro and Legal plans, or connect the CRM you already use.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Which CRMs do you connect to?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>Clio and CSV or Excel today. HubSpot, Salesforce and Microsoft 365 are coming soon.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Can I take my contacts with me?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>Yes. Export any list, any time. There is no lock-in.</p></div></div></div>
+      </div>
+      <div class="qgroup" role="tabpanel" id="g-data" aria-labelledby="t-data" hidden>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Who owns my data?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>You do, always. Only people you invite can see your contacts, and you can export or delete everything at any time.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Where is my data stored?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>[REGION and hosting provider. Link to the sub-processor list.]</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Is my data used to train AI?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>No. Your files and contacts are never used to train AI.</p></div></div></div>
+        <div class="qa"><button type="button" aria-expanded="false"><span>Does KyteOne help with GDPR?</span><span class="pm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="v" d="M12 5v14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/><path d="M5 12h14" stroke="#161514" stroke-width="2.5" stroke-linecap="round"/></svg></span></button><div class="ans"><div><p>Yes. You can find, export or delete everything held on a person in one step.</p></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section id="start" aria-label="Start free">
+  <div class="container" style="padding-bottom:72px">
+    <div class="cta-band" data-reveal>
+      <div class="txt">
+        <h2>Your contacts. Your team’s workspace.</h2>
+        <p>Free plan available. We’ll email you a secure link, no password needed.</p>
+      </div>
+      <div class="frm" id="frmWrap">
+        <form class="signup" id="signup" novalidate>
+          <label for="email" class="sr-only">Work email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@yourfirm.com" required aria-describedby="formMsg">
+          <button type="submit" class="btn btn-dark" id="submitBtn">Start free</button>
+        </form>
+        <p class="form-msg" id="formMsg" aria-live="polite">Already a member? The same email signs you in. Or <a href="#demo">book a demo</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Floating call to action (appears from How it works onwards, hides near pricing, sign-up and footer) -->
+<a href="#pricing" class="float-cta" id="floatCta" aria-label="See all plans, from $29 per user per month" tabindex="-1">
+  <span class="fc-info" aria-hidden="true"><span class="fc-dot"></span><span><span class="fc-long">Plans from </span><b>$29</b>/user/mo</span></span>
+  <span class="fc-btn" aria-hidden="true">See all plans<i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></i></span>
+</a>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="foot-main">
+      <div class="foot-brand">
+        <a href="#top" class="foot-wordmark" aria-label="KyteOne, back to top"><svg class="foot-logo" viewBox="0 0 600 174" role="img" aria-label="KyteOne" xmlns="http://www.w3.org/2000/svg"><g><g><g><path fill="#B62124" d="m449.95,76.5c-.46.78-.91,1.58-1.31,2.41-2.6,5.35-3.89,11.36-3.89,18.05v45.41h13.76v-44.02c0-4.08.68-7.83,2.04-11.23l-10.6-10.63Z"/><path fill="#B62124" d="m508.89,78.91c-2.64-5.34-6.49-9.6-11.54-12.76-5.05-3.16-11.33-4.74-18.84-4.74s-13.48,1.58-18.49,4.74c-2.36,1.49-4.44,3.23-6.26,5.2l10.06,10.09c1.04-1.28,2.22-2.43,3.57-3.44,2.96-2.23,6.67-3.35,11.12-3.35s8.46,1.12,11.47,3.35c3.01,2.23,5.28,5.14,6.81,8.71,1.53,3.58,2.29,7.51,2.29,11.78v43.88h13.76v-45.55c0-6.6-1.32-12.57-3.96-17.91Z"/></g><g><polygon fill="#B62124" points="98.9 154.99 98.9 139.22 51.86 86.46 85.55 50.83 74.62 50.83 74.62 38.6 68.82 38.6 23.18 86.85 23.18 38.44 0 47.75 0 142.38 23.18 142.38 23.18 116.78 37.68 101.45 85.41 154.99 98.9 154.99"/><rect fill="#B62124" x="80.68" y="25" width="19.7" height="19.75"/><rect fill="#B62124" x="70.15" y="4.79" width="13.94" height="13.98"/><rect fill="#B62124" x="90.53" width="13.94" height="13.98"/></g><g><polygon fill="currentColor" points="127.15 124.2 101.06 63.01 124.99 63.01 147.11 116.51 127.15 124.2"/><path fill="currentColor" d="m192.5,63.01l-36.34,85.65c-2.6,6.59-5.55,11.72-8.9,15.37-3.33,3.65-7.02,6.23-11.06,7.73-4.04,1.51-8.5,2.25-13.39,2.25-4.09,0-8.17-.65-12.26-1.94-4.1-1.31-7.48-3.1-10.17-5.41l8.53-16.79c1.78,1.7,3.86,3,6.2,3.9,2.35.89,4.71,1.35,7.1,1.35,3.19,0,5.77-.78,7.7-2.33,1.95-1.55,3.71-4.12,5.31-7.73l.29-.68,34.71-81.36h22.28Z"/></g><path fill="currentColor" d="m252.99,122.67c-2.59,2-5.78,3-9.57,3-2.99,0-5.36-.95-7.1-2.85-1.75-1.9-2.62-4.55-2.62-7.95v-32.7h19.89v-18h-19.89v-19.65l-23.48,9.34v10.31h-12.41v18h12.41v33.15c0,9.6,2.64,16.82,7.93,21.67,5.28,4.85,12.66,7.27,22.14,7.27,3.59,0,7.05-.43,10.39-1.27,3.34-.85,6.15-2.12,8.45-3.83l-6.13-16.5Z"/><path fill="currentColor" d="m341.71,80.91c-3.62-6.2-8.54-10.99-14.76-14.39-6.22-3.4-13.2-5.1-20.93-5.1s-15.25,1.78-21.66,5.32c-6.41,3.55-11.41,8.47-14.98,14.77-3.58,6.3-5.36,13.44-5.36,21.44s1.86,15.12,5.58,21.36c3.72,6.25,8.96,11.17,15.72,14.77,6.76,3.6,14.64,5.4,23.65,5.4,7.15,0,13.46-1.13,18.95-3.37,5.48-2.25,10.04-5.47,13.66-9.67l-12.19-13.49c-2.64,2.6-5.56,4.55-8.74,5.85-3.18,1.3-6.83,1.95-10.94,1.95-4.8,0-8.91-.87-12.34-2.62-3.43-1.75-6.12-4.27-8.08-7.57-1.08-1.81-1.83-3.82-2.31-6h59.74c.1-1,.2-2.07.29-3.22.1-1.15.15-2.17.15-3.07,0-8.7-1.81-16.14-5.44-22.34Zm-45.9.82c2.99-1.75,6.44-2.62,10.35-2.62s7.34.88,10.28,2.62c2.94,1.75,5.24,4.17,6.9,7.27,1.1,2.05,1.78,4.36,2.11,6.9h-38.77c.38-2.5,1.07-4.79,2.14-6.82,1.66-3.15,3.99-5.6,6.98-7.35Z"/><path fill="#B62124" d="m594.94,81.3c-3.38-6.29-8.04-11.18-13.98-14.66-5.94-3.48-12.8-5.22-20.55-5.22s-14.53,1.77-20.63,5.3c-6.1,3.53-10.88,8.42-14.36,14.66-1.68,3.01-2.94,6.25-3.81,9.69h14.39c.48-1.42,1.04-2.79,1.73-4.09,2.22-4.14,5.29-7.37,9.22-9.67,3.93-2.3,8.41-3.45,13.45-3.45s9.65,1.15,13.53,3.45c3.88,2.3,6.93,5.5,9.14,9.59,1.68,3.1,2.69,6.53,3.04,10.28h-65.6c-.2,1.84-.31,3.73-.31,5.68,0,8.08,1.79,15.25,5.36,21.49,3.57,6.24,8.61,11.16,15.11,14.74,6.5,3.58,14.03,5.37,22.59,5.37,6.65,0,12.67-1.12,18.06-3.38,5.39-2.25,9.9-5.53,13.53-9.82l-8.01-9.52c-2.92,3.28-6.32,5.73-10.2,7.37-3.88,1.64-8.19,2.46-12.92,2.46-5.74,0-10.83-1.18-15.26-3.53-4.44-2.35-7.89-5.65-10.35-9.9-1.82-3.13-2.97-6.59-3.44-10.36h65.03c.1-.71.17-1.48.23-2.3.05-.82.08-1.53.08-2.15,0-8.39-1.69-15.73-5.06-22.03Z"/><g><path fill="#B62124" d="m399.82,61.42v13.55c13.74,1.84,24.34,13.64,24.34,27.92s-10.6,26.08-24.34,27.92v13.55c21.17-1.91,37.77-19.74,37.77-41.47s-16.6-39.56-37.77-41.47Z"/><path fill="#B62124" d="m367.96,102.89c0-14.28,10.6-26.08,24.34-27.92v-13.55c-21.17,1.91-37.77,19.74-37.77,41.47s16.6,39.56,37.77,41.47v-13.55c-13.74-1.84-24.34-13.64-24.34-27.92Z"/></g></g></g></svg></a>
+        <p class="foot-tag">Trusted contact data from every document.</p>
+      </div>
+      <nav class="foot-links" aria-label="Footer">
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#capabilities">Capabilities</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#faq">FAQs</a></li>
+        </ul>
+        <ul>
+          <li><a href="#privacy">Privacy policy</a></li>
+          <li><a href="#terms">Terms of service</a></li>
+          <li><a href="#cookies">Cookie policy</a></li>
+          <li><a href="#dpa">Data processing agreement</a></li>
+          <li><a href="#subprocessors">Sub-processors</a></li>
+        </ul>
+        <ul>
+          <li><a href="#linkedin">LinkedIn</a></li>
+          <li><a href="#x">X</a></li>
+          <li><a href="mailto:hello@yourdomain">[hello@yourdomain]</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#signin">Sign in</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <span>[KyteOne Ltd], [REGISTERED ADDRESS]. Registered in [COUNTRY], company no. [NUMBER]. Data stored in [REGION].</span>
+      <span>© <span id="year">2026</span> [KyteOne Ltd]. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* Year */
+  $('#year').textContent = new Date().getFullYear();
+
+  /* Header shadow on scroll */
+  var header = $('#siteHeader');
+  var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* Smooth (inertial) scrolling for mouse wheel, trackpad and in-page links.
+     Off for touch devices and for people who prefer reduced motion. */
+  var smooth = (function () {
+    if (reduce || !window.matchMedia('(pointer: fine)').matches) return null;
+    var root = document.documentElement;
+    root.style.scrollBehavior = 'auto';
+    var target = window.scrollY, current = window.scrollY, raf = null, last = 0;
+    var EASE = 0.055;                 // lower = smoother/longer glide
+    function maxScroll() { return root.scrollHeight - window.innerHeight; }
+    function clamp(v) { return Math.max(0, Math.min(maxScroll(), v)); }
+    var expected = null;
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = null; last = 0; expected = null; target = current = window.scrollY; }
+    function loop(now) {
+      // If something else moved the page (keyboard, scrollbar drag, find-in-page), give way immediately
+      if (expected !== null && Math.abs(window.scrollY - expected) > 3) { stop(); return; }
+      var dt = last ? Math.min(now - last, 64) : 16.7; last = now;
+      var k = 1 - Math.pow(1 - EASE, dt / 16.7);   // frame-rate independent
+      current += (target - current) * k;
+      if (Math.abs(target - current) < 0.5) current = target;
+      window.scrollTo(0, current);
+      expected = window.scrollY;
+      if (current === target) { raf = null; last = 0; expected = null; return; }
+      raf = requestAnimationFrame(loop);
+    }
+    function start() { if (!raf) { current = window.scrollY; last = 0; expected = null; raf = requestAnimationFrame(loop); } }
+    // Keyboard scrolling and scrollbar/middle-click drags take over from the glide
+    window.addEventListener('keydown', function (e) {
+      if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','Spacebar'].indexOf(e.key) !== -1) stop();
+    });
+    window.addEventListener('mousedown', stop);
+    window.addEventListener('wheel', function (e) {
+      if (e.ctrlKey || e.defaultPrevented) return;                     // pinch-zoom
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;             // horizontal gestures stay native
+      if (e.target.closest && e.target.closest('[data-native-scroll]')) return;
+      var d = e.deltaY;
+      if (e.deltaMode === 1) d *= 40; else if (e.deltaMode === 2) d *= window.innerHeight;
+      e.preventDefault();
+      target = clamp(target + d);
+      start();
+    }, { passive: false });
+    // Keep in sync when scrolling happens another way (scrollbar drag, keyboard, find-in-page)
+    window.addEventListener('scroll', function () { if (!raf) { target = current = window.scrollY; } }, { passive: true });
+    window.addEventListener('resize', function () { target = clamp(target); });
+    return {
+      to: function (y) { target = clamp(y); start(); }
+    };
+  })();
+
+  /* In-page links glide to their section (respecting the sticky header offset) */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href');
+    if (id.length < 2) return;
+    var el = document.getElementById(id.slice(1));
+    if (!el) return;                                   // placeholder links (#demo etc.) do nothing special
+    e.preventDefault();
+    var offset = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    var y = el.getBoundingClientRect().top + window.scrollY - offset;
+    if (smooth) smooth.to(y); else window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+    if (history.pushState) history.pushState(null, '', id);
+  });
+
+  /* Floating "See all plans" button: show from the How it works section onwards,
+     hide while pricing, the sign-up band or the footer are on screen */
+  var fcta = $('#floatCta');
+  if ('IntersectionObserver' in window) {
+    var watch = { how: false, pricing: false, start: false, footer: false };
+    var updateCta = function () {
+      var show = watch.how && !watch.pricing && !watch.start && !watch.footer;
+      fcta.classList.toggle('show', show);
+      fcta.tabIndex = show ? 0 : -1;
+      fcta.setAttribute('aria-hidden', show ? 'false' : 'true');
+    };
+    // "how" = reached: the top of How it works has come into view (or is above it)
+    var howEl = $('#how'), pricingEl = $('#pricing'), ticking = false;
+    var checkHow = function () {
+      ticking = false;
+      var reached = howEl.getBoundingClientRect().top < window.innerHeight;
+      // once pricing has been reached, the button stays hidden for the rest of the page
+      var pastPricing = pricingEl.getBoundingClientRect().top < window.innerHeight;
+      if (reached !== watch.how || pastPricing !== watch.pricing) { watch.how = reached; watch.pricing = pastPricing; updateCta(); }
+    };
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(checkHow); } }, { passive: true });
+    window.addEventListener('resize', checkHow);
+    var map = [['start', '#start'], ['footer', '.footer']];
+    var fo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { watch[en.target.__key] = en.isIntersecting; });
+      updateCta();
+    }, { threshold: 0 });
+    map.forEach(function (m) { var el = $(m[1]); if (el) { el.__key = m[0]; fo.observe(el); } });
+    checkHow();
+  }
+
+  /* Hero decorations: subtle mouse parallax */
+  var heroEl = $('#top'), decoEls = $$('#deco .f');
+  if (!reduce && window.matchMedia('(pointer: fine)').matches) {
+    heroEl.addEventListener('mousemove', function (e) {
+      var r = heroEl.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      decoEls.forEach(function (el) {
+        var d = parseFloat(el.getAttribute('data-depth')) || 20;
+        el.style.transform = 'translate(' + (-x * d).toFixed(1) + 'px,' + (-y * d).toFixed(1) + 'px)';
+      });
+    });
+    heroEl.addEventListener('mouseleave', function () { decoEls.forEach(function (el) { el.style.transform = ''; }); });
+  }
+
+  /* Mobile menu */
+  var menuBtn = $('#menuBtn'), menu = $('#mobileMenu'), menuIcon = $('#menuIcon');
+  function setMenu(open) {
+    menu.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    menuIcon.setAttribute('d', open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16');
+  }
+  menuBtn.addEventListener('click', function () { setMenu(menu.hidden); });
+  $$('a', menu).forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); } });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !header.contains(e.target)) setMenu(false); });
+
+  /* Scrollspy */
+  var navLinks = $$('.nav-links a');
+  var spyTargets = navLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if ('IntersectionObserver' in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          navLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id); });
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    spyTargets.forEach(function (t) { spy.observe(t); });
+  }
+
+  /* Reveal on scroll */
+  var revealEls = $$('[data-reveal]');
+  if (reduce || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('is-in', 'in-view'); });
+  } else {
+    var ro = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in', 'in-view'); ro.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function (el) { ro.observe(el); });
+  }
+
+  /* Count-up numbers */
+  function countUp(el) {
+    var target = parseFloat(el.getAttribute('data-count'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (reduce) { el.textContent = target.toLocaleString('en-GB') + suffix; return; }
+    var start = null, dur = 1400;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toLocaleString('en-GB') + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = $$('[data-count]');
+  if ('IntersectionObserver' in window) {
+    var co = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { countUp(en.target); co.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    counters.forEach(function (c) { c.textContent = '0' + (c.getAttribute('data-suffix') || ''); co.observe(c); });
+  }
+
+  /* Bulk progress bar */
+  var hub = $('#hub'), hubBar = $('#hubBar');
+  if ('IntersectionObserver' in window && !reduce) {
+    var ho = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { hubBar.style.width = '68%'; ho.disconnect(); }
+    }, { threshold: 0.5 });
+    ho.observe(hub);
+  } else { hubBar.style.width = '68%'; }
+
+  /* Typing demo in the Word tile */
+  var typed = $('#typed'), typedSearch = $('#typedSearch');
+  var word = '@Harb';
+  if (!reduce) {
+    var i = 1;
+    setInterval(function () {
+      i = i >= word.length + 6 ? 1 : i + 1;
+      var s = word.slice(0, Math.min(i, word.length));
+      typed.textContent = s; typedSearch.textContent = s;
+    }, 380);
+  } else { typed.textContent = word; typedSearch.textContent = word; }
+
+  /* Generic vertical tablist helper (arrow keys, Home/End) */
+  function tablist(listEl, onSelect) {
+    var tabs = $$('[role="tab"]', listEl);
+    function select(idx, focus) {
+      tabs.forEach(function (t, i) {
+        var on = i === idx;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if (panel) {
+          if (on && panel.hidden) {
+            panel.hidden = false;
+            panel.classList.remove('enter'); void panel.offsetWidth; panel.classList.add('enter');
+          } else if (!on) { panel.hidden = true; }
+        }
+      });
+      if (focus) tabs[idx].focus();
+      if (onSelect) onSelect(idx);
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i, false); listEl.dispatchEvent(new CustomEvent('user-select')); });
+      t.addEventListener('keydown', function (e) {
+        var k = e.key, n = tabs.length, to = null;
+        if (k === 'ArrowDown' || k === 'ArrowRight') to = (i + 1) % n;
+        else if (k === 'ArrowUp' || k === 'ArrowLeft') to = (i - 1 + n) % n;
+        else if (k === 'Home') to = 0; else if (k === 'End') to = n - 1;
+        if (to !== null) { e.preventDefault(); select(to, true); listEl.dispatchEvent(new CustomEvent('user-select')); }
+      });
+    });
+    return { select: select, count: tabs.length, tabs: tabs };
+  }
+
+  /* How it works: tabs + autoplay (pauses on hover/focus, stops after user picks) */
+  var stepsEl = $('#steps');
+  var STEP_MS = 6000;
+  stepsEl.style.setProperty('--step-ms', STEP_MS + 'ms');
+  var current = 0, timer = null, stopped = reduce;
+  var steps = tablist(stepsEl, function (idx) { current = idx; restartProgress(); });
+  function restartProgress() {
+    steps.tabs.forEach(function (t) { t.classList.remove('playing'); });
+    if (stopped) return;
+    var t = steps.tabs[current]; void t.offsetWidth; t.classList.add('playing');
+    clearTimeout(timer);
+    timer = setTimeout(function () { steps.select((current + 1) % steps.count, false); }, STEP_MS);
+  }
+  function pause() { clearTimeout(timer); steps.tabs.forEach(function (t) { t.classList.remove('playing'); }); }
+  stepsEl.addEventListener('user-select', function () { stopped = true; pause(); });
+  var howWrap = $('#how .how');
+  howWrap.addEventListener('mouseenter', pause);
+  howWrap.addEventListener('mouseleave', function () { if (!stopped) restartProgress(); });
+  howWrap.addEventListener('focusin', pause);
+  if ('IntersectionObserver' in window) {
+    var hw = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { if (!stopped) restartProgress(); } else { pause(); }
+    }, { threshold: 0.35 });
+    hw.observe(howWrap);
+  }
+  /* Small demo feedback on the "Review merge" button */
+  $$('[data-demo-merge]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      b.textContent = 'Merged ✓'; b.style.background = '#1F6B42';
+      setTimeout(function () { b.textContent = 'Review merge'; b.style.background = ''; }, 1800);
+    });
+  });
+
+  /* Billing toggle with sliding thumb */
+  var billing = $('#billing'), thumb = $('.thumb', billing), billBtns = $$('button', billing);
+  function moveThumb() {
+    var on = billBtns.filter(function (b) { return b.getAttribute('aria-pressed') === 'true'; })[0];
+    thumb.style.width = on.offsetWidth + 'px';
+    thumb.style.transform = 'translateX(' + (on.offsetLeft - 4) + 'px)';
+  }
+  function setPeriod(p) {
+    billBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.period === p)); });
+    moveThumb();
+    $$('[data-annual]').forEach(function (el) {
+      var val = el.getAttribute('data-' + p);
+      if (el.classList.contains('price') && !reduce) {
+        el.classList.add('swap');
+        setTimeout(function () { el.textContent = val; el.classList.remove('swap'); }, 160);
+      } else { el.textContent = val; }
+    });
+  }
+  billBtns.forEach(function (b) { b.addEventListener('click', function () { setPeriod(b.dataset.period); }); });
+  window.addEventListener('resize', moveThumb);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveThumb);
+  moveThumb();
+
+  /* FAQ: topic tabs + accordion (one open at a time per topic) */
+  tablist($('#topics'), function (idx) {
+    var group = document.getElementById($$('#topics [role="tab"]')[idx].getAttribute('aria-controls'));
+    var items = $$('.qa', group);
+    if (!items.some(function (q) { return q.classList.contains('open'); }) && items[0]) toggleQA(items[0], true);
+  });
+  function toggleQA(qa, open) {
+    qa.classList.toggle('open', open);
+    $('button', qa).setAttribute('aria-expanded', String(open));
+  }
+  $$('.qa').forEach(function (qa) {
+    $('button', qa).addEventListener('click', function () {
+      var willOpen = !qa.classList.contains('open');
+      $$('.qa', qa.parentNode).forEach(function (o) { if (o !== qa) toggleQA(o, false); });
+      toggleQA(qa, willOpen);
+    });
+  });
+
+  /* Sign-up form: validation + loading + success state.
+     NOTE: this is front-end only. Replace the setTimeout with a real request to your sign-up endpoint. */
+  var form = $('#signup'), email = $('#email'), msg = $('#formMsg'), btn = $('#submitBtn'), wrap = $('#frmWrap');
+  var defaultMsg = msg.innerHTML;
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  email.addEventListener('input', function () {
+    if (form.classList.contains('err')) { form.classList.remove('err'); msg.classList.remove('error'); msg.innerHTML = defaultMsg; email.removeAttribute('aria-invalid'); }
+  });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = email.value.trim();
+    if (!emailRe.test(v)) {
+      form.classList.add('err'); msg.classList.add('error');
+      msg.textContent = v ? 'That email doesn’t look right. Check it and try again.' : 'Enter your work email to get started.';
+      email.setAttribute('aria-invalid', 'true'); email.focus();
+      return;
+    }
+    btn.disabled = true; btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Sending';
+    setTimeout(function () {
+      wrap.innerHTML = '';
+      var ok = document.createElement('div');
+      ok.className = 'form-ok'; ok.setAttribute('role', 'status');
+      ok.innerHTML = '<span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F6B42" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>' +
+        '<div><div style="font-weight:600">Check your inbox</div><div style="font-size:14px;color:var(--text)">We’ve sent a secure sign-in link to <b></b>.</div></div>';
+      $('b', ok).textContent = v;
+      wrap.appendChild(ok);
+    }, 900);
+  });
+})();
+</script>
+</body>
+</html>
